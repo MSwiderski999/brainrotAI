@@ -8,6 +8,7 @@ namespace brAI_lib.Classes
         public string FindBestMove(Chess chess, int depth, int timeoutMs = -1)
         {
             throw new NotImplementedException();
+            Piece piece = null;
         }
     }
 }
