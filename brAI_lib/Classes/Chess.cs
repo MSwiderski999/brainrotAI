@@ -147,7 +147,7 @@ namespace brAI_lib.Classes
 
 
 
-        static Dictionary<string, int> SQAURES = new Dictionary<string, int>()
+        public static Dictionary<string, int> SQUARES = new Dictionary<string, int>()
       {
    { "a8",   0},{ "b8",   1},
    {"c8",   2}, {"d8",  3}, {"e8",   4}, {"f8",   5}, {"g8",   6}, {"h8",  7},
@@ -164,12 +164,12 @@ namespace brAI_lib.Classes
         Dictionary<string, Dictionary<string, int>[]> ROOKS = new Dictionary<string, Dictionary<string, int>[]>()
     {
 { "w",new Dictionary<string,int>[]{
-  new Dictionary<string,int>{ {"square",SQAURES["a1"]}, {"flag",BITS.QSIDE_CASTLE}},
-    new Dictionary<string,int>{ {"square",SQAURES["h1"]}, {"flag",BITS.KSIDE_CASTLE}}
+  new Dictionary<string,int>{ {"square",SQUARES["a1"]}, {"flag",BITS.QSIDE_CASTLE}},
+    new Dictionary<string,int>{ {"square",SQUARES["h1"]}, {"flag",BITS.KSIDE_CASTLE}}
  } },
  { "b",new Dictionary<string,int>[]{
- new Dictionary<string,int>{ {"square",SQAURES["a8"]}, {"flag",BITS.QSIDE_CASTLE}},
-    new Dictionary<string,int>{ {"square",SQAURES["h8"]}, {"flag",BITS.KSIDE_CASTLE}}
+ new Dictionary<string,int>{ {"square",SQUARES["a8"]}, {"flag",BITS.QSIDE_CASTLE}},
+    new Dictionary<string,int>{ {"square",SQUARES["h8"]}, {"flag",BITS.KSIDE_CASTLE}}
  } }
 
 
@@ -295,7 +295,7 @@ namespace brAI_lib.Classes
                 castling["b"] |= BITS.QSIDE_CASTLE;
             }
 
-            ep_square = tokens[3] == "-" ? EMPTY : SQAURES[tokens[3]];
+            ep_square = tokens[3] == "-" ? EMPTY : SQUARES[tokens[3]];
             half_moves = int.Parse(tokens[4]);
             move_number = int.Parse(tokens[5]);
 
@@ -435,7 +435,7 @@ namespace brAI_lib.Classes
         {
             int empty = 0;
             string fen = "";
-            for (int i = SQAURES["a8"]; i <= SQAURES["h1"]; i++)
+            for (int i = SQUARES["a8"]; i <= SQUARES["h1"]; i++)
             {
                 if (board[i] == null)
                 {
@@ -461,7 +461,7 @@ namespace brAI_lib.Classes
                         fen += empty.ToString();
                     }
 
-                    if (i != SQAURES["h1"])
+                    if (i != SQUARES["h1"])
                     {
                         fen += "/";
                     }
@@ -512,11 +512,11 @@ namespace brAI_lib.Classes
 
         Piece get(string square)
         {
-            if (!SQAURES.ContainsKey(square))
+            if (!SQUARES.ContainsKey(square))
             {
                 return null;
             }
-            Piece piece = board[SQAURES[square]];
+            Piece piece = board[SQUARES[square]];
             return piece;
         }
 
@@ -536,12 +536,12 @@ namespace brAI_lib.Classes
             }
 
             /* check for valid square */
-            if (!SQAURES.ContainsKey(square))
+            if (!SQUARES.ContainsKey(square))
             {
                 return false;
             }
 
-            int sq = SQAURES[square];
+            int sq = SQUARES[square];
 
             /* don't let the user place more than one king */
             if (piece.type == KING
@@ -565,12 +565,12 @@ namespace brAI_lib.Classes
 
         Piece remove(string square)
         {
-            if (!SQAURES.ContainsKey(square))
+            if (!SQUARES.ContainsKey(square))
             {
                 return null;
             }
             Piece piece = get(square);
-            board[SQAURES[square]] = null;
+            board[SQUARES[square]] = null;
             if (piece != null && piece.type == KING)
             {
                 kings[piece.color] = EMPTY;
@@ -635,8 +635,8 @@ namespace brAI_lib.Classes
             string us = turn;
             string them = swap_color(us);
             Dictionary<string, int> second_rank = new Dictionary<string, int>() { { "b", RANK_7 }, { "w", RANK_2 } };
-            int first_sq = SQAURES["a8"];
-            int last_sq = SQAURES["h1"];
+            int first_sq = SQUARES["a8"];
+            int last_sq = SQUARES["h1"];
             bool single_sqaure = false;
 
             bool legal = options != null && options.ContainsKey("legal") ? (bool)options["legal"] : true;
@@ -644,9 +644,9 @@ namespace brAI_lib.Classes
             if (options != null && options.ContainsKey("square"))
             {
                 string sq = (string)options["square"];
-                if (SQAURES.ContainsKey(sq))
+                if (SQUARES.ContainsKey(sq))
                 {
-                    first_sq = last_sq = SQAURES[sq];
+                    first_sq = last_sq = SQUARES[sq];
                     single_sqaure = true;
                 }
                 else
@@ -852,7 +852,7 @@ namespace brAI_lib.Classes
 
         bool attacked(string color, int square)
         {
-            for (int i = SQAURES["a8"]; i <= SQAURES["h1"]; i++)
+            for (int i = SQUARES["a8"]; i <= SQUARES["h1"]; i++)
             {
                 /* did we run off the end of the board */
                 if ((i & 0x88) != 0) { i += 7; continue; }
@@ -925,7 +925,7 @@ namespace brAI_lib.Classes
             int num_pieces = 0;
             int sq_color = 0;
 
-            for (int i = SQAURES["a8"]; i <= SQAURES["h1"]; i++)
+            for (int i = SQUARES["a8"]; i <= SQUARES["h1"]; i++)
             {
                 sq_color = (sq_color + 1) % 2;
                 if ((i & 0x88) != 0) { i += 7; continue; }
@@ -1275,7 +1275,7 @@ namespace brAI_lib.Classes
         string ascii()
         {
             var s = "   +------------------------+\n";
-            for (var i = SQAURES["a8"]; i <= SQAURES["h1"]; i++)
+            for (var i = SQUARES["a8"]; i <= SQUARES["h1"]; i++)
             {
                 /* display the rank */
                 if (file(i) == 0)
@@ -1373,8 +1373,8 @@ namespace brAI_lib.Classes
                 {
                     if (matches.Length > 1 &&
                     (string.IsNullOrEmpty(piece) || piece.ToLower() == moves.ElementAt(i).piece) &&
-                    SQAURES[from] == moves.ElementAt(i).from &&
-                    SQAURES[to] == moves.ElementAt(i).to &&
+                    SQUARES[from] == moves.ElementAt(i).from &&
+                    SQUARES[to] == moves.ElementAt(i).to &&
                     (string.IsNullOrEmpty(promotion) || promotion.ToLower() == moves.ElementAt(i).promotion))
                     {
                         return moves.ElementAt(i);
@@ -1584,9 +1584,9 @@ namespace brAI_lib.Classes
 
         public string SquareColor(string square)
         {
-            if (SQAURES.ContainsKey(square))
+            if (SQUARES.ContainsKey(square))
             {
-                int sq = SQAURES[square];
+                int sq = SQUARES[square];
                 return (rank(sq) + file(sq)) % 2 == 0 ? "light" : "dark";
             }
 
