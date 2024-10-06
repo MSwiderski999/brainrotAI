@@ -116,7 +116,7 @@ namespace brAI_lib.Classes
         /// <returns>Position evaluation.</returns>
         public static double Evaluate(Chess chess)
         {
-            return GetMaterial(chess);
+            return GetPieceValuesDiff(chess);
         }
 
         /// <summary>
@@ -124,19 +124,50 @@ namespace brAI_lib.Classes
         /// </summary>
         /// <param name="piece">Chess piece</param>
         /// <returns>Value of the piece, negative is the piece is black, positive if white.</returns>
-        private static double GetPieceValue(Piece piece)
+        private static double GetPieceMaterial(Piece piece)
         {
-            return piece.color == "w" ? PieceValues[piece.type] : PieceValues[piece.type] * -1;
+            return piece.color == "w" ? PieceValues[piece.type] : - PieceValues[piece.type];
         }
 
         /// <summary>
-        /// Counts all material in a given position.
+        /// Gets the value of a piece in a given square
+        /// </summary>
+        /// <param name="square">Square</param>
+        /// <param name="piece">Piece</param>
+        /// <returns>Value of a piece towards the evaluation</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Square is out of bounds</exception>
+        private static double GetSquareValue(string square, Piece piece)
+        {
+            (int, int) idx = Chess.SquareToIdx(square);
+
+            if (piece.color == "b")
+            {
+                idx.Item1 = 7 - idx.Item1;
+                idx.Item2 = 7 - idx.Item2;
+            }
+
+            double absVal = piece.type switch
+            {
+                "p" => PawnSquareValues[idx.Item1, idx.Item2],
+                "n" => KnightSquareValues[idx.Item1, idx.Item2],
+                "b" => BishopSquareValues[idx.Item1, idx.Item2],
+                "r" => RookSquareValues[idx.Item1, idx.Item2],
+                "q" => QueenSquareValues[idx.Item1, idx.Item2],
+                "k" => KingSquareValues[idx.Item1, idx.Item2],
+                _ => throw new ArgumentOutOfRangeException(nameof(piece))
+            };
+
+            return piece.color == "w" ? absVal : -absVal;
+        }
+
+        /// <summary>
+        /// Sums values of each piece on the board
         /// </summary>
         /// <param name="chess">Chess object</param>
-        /// <returns>Material balance between white and black</returns>
-        private static double GetMaterial(Chess chess)
+        /// <returns>Piece value balance between white and black</returns>
+        private static double GetPieceValuesDiff(Chess chess)
         {
-            double material = 0;
+            double diff = 0;
 
             foreach (string square in Chess.SQUARES.Keys)
             {
@@ -144,11 +175,11 @@ namespace brAI_lib.Classes
 
                 if (piece != null)
                 {
-                    material += GetPieceValue(piece);
+                    diff += GetPieceMaterial(piece) + GetSquareValue(square, piece);
                 }
             }
 
-            return material;
+            return diff;
         }
     }
 }
