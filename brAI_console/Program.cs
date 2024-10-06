@@ -6,6 +6,8 @@ namespace brAI_console
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello, World!");
+
             Chess chess = new();
 
             Console.WriteLine(chess.Ascii());
