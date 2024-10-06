@@ -146,7 +146,7 @@ namespace brAI_lib.Classes
         static int RANK_8 = 0;
 
 
-
+        // Changed accesibility to public for usage in Evaluation.cs
         public static Dictionary<string, int> SQUARES = new Dictionary<string, int>()
       {
    { "a8",   0},{ "b8",   1},
@@ -1388,12 +1388,12 @@ namespace brAI_lib.Classes
 
         // UTILITY FUNCTIONS
         // ****************************************************************************
-        int rank(int i)
+        static int rank(int i)
         {
             return i >> 4;
         }
 
-        int file(int i)
+        static int file(int i)
         {
             return i & 15;
         }
@@ -1591,6 +1591,18 @@ namespace brAI_lib.Classes
             }
 
             return null;
+        }
+
+        //Use square to access 2D square arrays
+        public static (int, int) SquareToIdx(string square)
+        {
+            if (SQUARES.TryGetValue(square, out int value))
+            {
+                int sq = value;
+                return (rank(sq), file(sq));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(square));
         }
 
 
