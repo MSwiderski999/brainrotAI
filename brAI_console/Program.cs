@@ -6,14 +6,12 @@ namespace brAI_console
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
-
             Chess chess = new();
 
-            Console.WriteLine(chess.Ascii());
+            Console.WriteLine("Starting position: " + chess.Ascii());
 
             double eval = Evaluation.Evaluate(chess);
-            Console.WriteLine($"Evaluation: {eval:f2}");
+            Console.WriteLine($"Evaluation: {eval:f1}");
         }
     }
 }
