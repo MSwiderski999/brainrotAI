@@ -1,4 +1,5 @@
 ﻿using brAI_lib.Interfaces;
+using System.Diagnostics;
 
 namespace brAI_lib.Classes
 {
@@ -120,13 +121,30 @@ namespace brAI_lib.Classes
         }
 
         /// <summary>
+        /// Sums values of each piece on the board
+        /// </summary>
+        /// <param name="chess">Chess object</param>
+        /// <returns>Piece value balance between white and black</returns>
+        private static double GetPieceValuesDiff(Chess chess)
+        {
+            double diff = 0;
+
+            foreach (string square in Chess.SQUARES.Keys)
+            {
+                diff += GetPieceValue(chess, square);
+            }
+
+            return diff;
+        }
+
+        /// <summary>
         /// Gets the material value of a piece.
         /// </summary>
         /// <param name="piece">Chess piece</param>
         /// <returns>Value of the piece, negative is the piece is black, positive if white.</returns>
         private static double GetPieceMaterial(Piece piece)
         {
-            return piece.color == "w" ? PieceValues[piece.type] : - PieceValues[piece.type];
+            return PieceValues[piece.type];
         }
 
         /// <summary>
@@ -146,7 +164,7 @@ namespace brAI_lib.Classes
                 idx.Item2 = 7 - idx.Item2;
             }
 
-            double absVal = piece.type switch
+            double val = piece.type switch
             {
                 "p" => PawnSquareValues[idx.Item1, idx.Item2],
                 "n" => KnightSquareValues[idx.Item1, idx.Item2],
@@ -157,29 +175,78 @@ namespace brAI_lib.Classes
                 _ => throw new ArgumentOutOfRangeException(nameof(piece))
             };
 
-            return piece.color == "w" ? absVal : -absVal;
+            return val;
         }
 
         /// <summary>
-        /// Sums values of each piece on the board
+        /// Value added to position closure per pawn
+        /// </summary>
+        private static readonly double EvalPerPawn = 0.2;
+
+        /// <summary>
+        /// Calculates how closed the position is
         /// </summary>
         /// <param name="chess">Chess object</param>
-        /// <returns>Piece value balance between white and black</returns>
-        private static double GetPieceValuesDiff(Chess chess)
+        /// <returns>Evaluation of closure</returns>
+        private static double PositionClosure(Chess chess)
         {
-            double diff = 0;
+            int pawns = 0;
 
             foreach (string square in Chess.SQUARES.Keys)
             {
                 Piece piece = chess.GetPiece(square);
 
-                if (piece != null)
+                if (piece != null && piece.type == "p")
                 {
-                    diff += GetPieceMaterial(piece) + GetSquareValue(square, piece);
+                    pawns++;
                 }
             }
 
-            return diff;
+            return EvalPerPawn * pawns;
+        }
+
+        /// <summary>
+        /// Get value of each individual piece on the board
+        /// </summary>
+        /// <param name="chess">Chess object</param>
+        /// <param name="square">Square to evaluate</param>
+        /// <returns></returns>
+        private static double GetPieceValue(Chess chess, string square)
+        {
+            Piece piece = chess.GetPiece(square);
+
+            if ( piece == null ) { return 0; }
+
+            double val = GetPieceMaterial(piece) + GetSquareValue(square, piece);
+
+            if ( piece.type == "p")
+            {
+                //evaluate pawn
+            }
+            else if (piece.type == "n")
+            {
+                //knights prefer closed positions
+                val += PositionClosure(chess);
+            }
+            else if (piece.type == "b")
+            {
+                //bishops prefer open positions
+                val -= PositionClosure(chess);
+            }
+            else if (piece.type == "r")
+            {
+                //evaluate rook
+            }
+            else if (piece.type == "k")
+            {
+                //evaluate king
+            }
+            else if (piece.type == "q")
+            {
+                //evaluate queen
+            }
+
+            return piece.color == "w" ? val : -val;
         }
     }
 }
