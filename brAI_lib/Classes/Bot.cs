@@ -5,7 +5,7 @@ namespace brAI_lib.Classes
     public class Bot : IBot
     {
         /// <summary>
-        /// Adversarial search used to find optimal move given the present gamestate, utilizing negamax.
+        /// Adversarial search used to find optimal move given the present gamestate, utilizing negamax with alpha-beta pruning.
         /// </summary>
         /// <param name="chess">State of the chess game to analize from</param>
         /// <param name="depth">Maximum depth to search until</param>
@@ -23,7 +23,7 @@ namespace brAI_lib.Classes
             foreach (string move in moves) 
             {
                 chess.Move(move);
-                moveValues.Add(move, -negamax(chess, depth - 1, -color));
+                moveValues.Add(move, -alphabetaNegamax(chess, depth - 1, -color, double.PositiveInfinity, double.PositiveInfinity));
                 chess.Undo();
             }
 
@@ -35,15 +35,18 @@ namespace brAI_lib.Classes
         }
 
         /// <summary>
-        /// Naïve implementation of negamax (variant of minimax algorithm).
+        /// Implementation of negamax (variant of minimax algorithm) utilizing alpha-beta pruning.
         /// Recursively searches every possible move branch up to given depth,
         /// for every evaluation depth, picks the preffered move for the current player.
+        /// Keeps track of alpha and beta, worst case scenarios for each player upon which to evaluate whether to continue checking moves from posistion.
         /// </summary>
         /// <param name="chess">State of the chess game to analize from</param>
         /// <param name="depth">Maximum depth to search until</param>
         /// <param name="color">Color of the current player (+1 for white, -1 for black)</param>
+        /// <param name="alpha">Minimal maximized value guaranteed for the current player</param>
+        /// <param name="beta">Minimal maximized value guaranteed for the opponent player</param>
         /// <returns>Minimaxed value of move for current depth</returns>
-        private double negamax(Chess chess, int depth, int color) {
+        private double alphabetaNegamax(Chess chess, int depth, int color, double alpha, double beta) {
             if (depth == 0 || chess.GameOver()) 
                 return color * Evaluation.Evaluate(chess);
             else 
@@ -53,8 +56,11 @@ namespace brAI_lib.Classes
                 foreach (string move in moves)
                 {
                     chess.Move(move);
-                    value = Math.Max(value, -negamax(chess, depth - 1, -color));
+                    value = Math.Max(value, -alphabetaNegamax(chess, depth - 1, -color, beta, alpha));
                     chess.Undo();
+
+                    alpha = Math.Max(alpha, value);
+                    if (value >= beta) break;
                 }
                 return value;
             }
