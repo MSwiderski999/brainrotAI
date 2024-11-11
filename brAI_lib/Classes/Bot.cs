@@ -19,19 +19,21 @@ namespace brAI_lib.Classes
             string[] moves = chess.LegalMovesAll();
             int color = chess.Turn() == "w" ? 1 : -1;
 
-            var moveValues = new Dictionary<string, double>();
+            string bestMove = "";
+            double value = double.NegativeInfinity;
+
             foreach (string move in moves) 
             {
                 chess.Move(move);
-                moveValues.Add(move, -alphabetaNegamax(chess, depth - 1, -color, double.PositiveInfinity, double.PositiveInfinity));
+                double moveValue = -alphabetaNegamax(chess, depth - 1, -color, double.NegativeInfinity, value);
+                if (moveValue > value) {
+                    bestMove = move;
+                    value = moveValue;
+                }
                 chess.Undo();
             }
 
-            (string, double) bestMove = ("", double.NegativeInfinity);
-            foreach (var move in moveValues) 
-                if (move.Value > bestMove.Item2) bestMove = (move.Key, move.Value);
-
-            return bestMove.Item1;
+            return bestMove;
         }
 
         /// <summary>
