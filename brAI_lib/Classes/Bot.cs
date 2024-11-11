@@ -27,7 +27,8 @@ namespace brAI_lib.Classes
                 double moveValue = -alphabetaNegamax(chess, depth - 1, -color, -double.NegativeInfinity, -value);
                 chess.Undo();
 
-                if (moveValue > value) {
+                if (moveValue > value) 
+                {
                     bestMove = move;
                     value = moveValue;
                 }
