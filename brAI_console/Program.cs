@@ -1,4 +1,5 @@
-﻿using brAI_lib.Classes;
+﻿using System.Diagnostics;
+using brAI_lib.Classes;
 
 namespace brAI_console
 {
@@ -6,12 +7,31 @@ namespace brAI_console
     {
         static void Main(string[] args)
         {
-            Chess chess = new();
+            if (args.Length < 1) 
+            {
+                Console.WriteLine("Error: insufficient arguments\nUsage: brAI_console [depth]");
+                Environment.Exit(1);
+            }
 
-            Console.WriteLine("Starting position: \n" + chess.Ascii());
+            try 
+            {
+                int depth = Convert.ToInt32(args[0]);
+                Chess chess = new();
+                Console.WriteLine("Starting position: \n" + chess.Ascii());
 
-            double eval = Evaluation.Evaluate(chess);
-            Console.WriteLine($"Evaluation: {eval:f1}");
+                Bot bot = new();
+                Stopwatch sw = new();
+                sw.Start();
+                string best = bot.FindBestMove(chess, depth);
+                sw.Stop();
+
+                Console.WriteLine($"Best move: {best} (took {sw.ElapsedMilliseconds / 1000.0}s)");
+            } 
+            catch  
+            {
+                Console.WriteLine("Error: incorrect number format for argument [depth]");
+                Environment.Exit(1);
+            }
         }
     }
 }
