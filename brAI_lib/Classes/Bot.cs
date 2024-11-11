@@ -59,7 +59,7 @@ namespace brAI_lib.Classes
                 foreach (string move in moves)
                 {
                     chess.Move(move);
-                    value = Math.Max(value, -alphabetaNegamax(chess, depth - 1, -color, beta, alpha));
+                    value = Math.Max(value, -alphabetaNegamax(chess, depth - 1, -color, -beta, -alpha));
                     chess.Undo();
 
                     alpha = Math.Max(alpha, value);
