@@ -16,21 +16,21 @@ namespace brAI_lib.Classes
         {
             if (chess.GameOver()) throw new ArgumentException("Cannot perform search on concluded game");
 
+            double value = double.NegativeInfinity;
             string[] moves = chess.LegalMovesAll();
             int color = chess.Turn() == "w" ? 1 : -1;
-
-            string bestMove = "";
-            double value = double.NegativeInfinity;
+            string bestMove = "";  
 
             foreach (string move in moves) 
             {
                 chess.Move(move);
                 double moveValue = -alphabetaNegamax(chess, depth - 1, -color, double.NegativeInfinity, value);
+                chess.Undo();
+
                 if (moveValue > value) {
                     bestMove = move;
                     value = moveValue;
                 }
-                chess.Undo();
             }
 
             return bestMove;
@@ -55,6 +55,7 @@ namespace brAI_lib.Classes
             {
                 double value = double.NegativeInfinity;
                 string[] moves = chess.LegalMovesAll();
+
                 foreach (string move in moves)
                 {
                     chess.Move(move);
