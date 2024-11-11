@@ -9,14 +9,22 @@ namespace brAI_console
         {
             if (args.Length < 1) 
             {
-                Console.WriteLine("Error: insufficient arguments\nUsage: brAI_console [depth]");
+                Console.WriteLine("Error: insufficient arguments\nUsage: brAI_console [depth] [?fen]");
                 Environment.Exit(1);
             }
 
-            try 
+            if (!int.TryParse(args[0], out int depth))
             {
-                int depth = Convert.ToInt32(args[0]);
-                Chess chess = new();
+                Console.WriteLine("Error: incorrent number format in argument [depth]");
+                Environment.Exit(1);
+            }
+
+            Chess chess;
+            try
+            {
+                if (args.Length > 1) chess = new(args[1]);
+                else chess = new();
+
                 Console.WriteLine("Starting position: \n" + chess.Ascii());
 
                 Bot bot = new();
@@ -26,10 +34,10 @@ namespace brAI_console
                 sw.Stop();
 
                 Console.WriteLine($"Best move: {best} (took {sw.ElapsedMilliseconds / 1000.0}s)");
-            } 
-            catch  
+            }
+            catch
             {
-                Console.WriteLine("Error: incorrect number format for argument [depth]");
+                Console.WriteLine("Error: incorrect fen format in argument [?fen]");
                 Environment.Exit(1);
             }
         }
