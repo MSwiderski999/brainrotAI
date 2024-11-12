@@ -20,7 +20,7 @@ namespace brAI_lib.Classes
             int color = chess.Turn() == "w" ? 1 : -1;
             string bestMove = "";  
 
-            foreach (string move in chess.GenerateLegalMovesEnumerable())
+            foreach (Move move in chess.GenerateLegalMovesEnumerable())
             {
                 chess.Move(move);
                 double moveValue = -alphabetaNegamax(chess, depth - 1, -color, double.NegativeInfinity, -value);
@@ -28,7 +28,7 @@ namespace brAI_lib.Classes
 
                 if (moveValue > value) 
                 {
-                    bestMove = move;
+                    bestMove = chess.MoveToSan(move);
                     value = moveValue;
                 }
             }
@@ -56,7 +56,7 @@ namespace brAI_lib.Classes
 
                 double value = double.NegativeInfinity;
 
-                foreach (string move in chess.GenerateLegalMovesEnumerable())
+                foreach (Move move in chess.GenerateLegalMovesEnumerable())
                 {
                     chess.Move(move);
                     value = Math.Max(value, -alphabetaNegamax(chess, depth - 1, -color, -beta, -alpha));

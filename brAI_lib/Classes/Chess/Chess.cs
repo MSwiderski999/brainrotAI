@@ -789,7 +789,7 @@ namespace brAI_lib.Classes
             return legal_moves;
         }
 
-        string move_to_san(Move move, bool sloppy = false)
+        public string MoveToSan(Move move, bool sloppy = false)
         {
             string output = "";
             if ((move.flags & BITS.KSIDE_CASTLE) != 0)
@@ -1365,7 +1365,7 @@ namespace brAI_lib.Classes
             {
                 // try the strict parser first, then the sloppy parser if requested
                 // by the user
-                if (clean_move == stripped_san(move_to_san(moves.ElementAt(i))) || sloppy && clean_move == stripped_san(move_to_san(moves.ElementAt(i), true)))
+                if (clean_move == stripped_san(MoveToSan(moves.ElementAt(i))) || sloppy && clean_move == stripped_san(MoveToSan(moves.ElementAt(i), true)))
                 {
                     return moves.ElementAt(i);
                 }
@@ -1519,6 +1519,18 @@ namespace brAI_lib.Classes
             return true;
         }
 
+        public bool Move(Move move, bool sloppy = false)
+        {
+            if (move == null)
+            {
+                return false;
+            }
+
+            make_move(move);
+
+            return true;
+        }
+
         public string[] MoveHistory()
         {
             Stack<Move> reversed_history = new Stack<Move>();
@@ -1531,7 +1543,7 @@ namespace brAI_lib.Classes
             while (reversed_history.Count > 0)
             {
                 var move = reversed_history.Pop();
-                move_history.Push(move_to_san(move));
+                move_history.Push(MoveToSan(move));
                 make_move(move);
             }
 
@@ -1614,7 +1626,7 @@ namespace brAI_lib.Classes
             Stack<string> legalMoves = new Stack<string>();
             for (int i = 0; i < moves.Count; i++)
             {
-                legalMoves.Push(move_to_san(moves.ElementAt(i), false));
+                legalMoves.Push(MoveToSan(moves.ElementAt(i), false));
             }
             return legalMoves.ToArray();
         }
@@ -1628,7 +1640,7 @@ namespace brAI_lib.Classes
             {
                 for (int i = 0; i < moves.Count; i++)
                 {
-                    legalMoves.Push(move_to_san(moves.ElementAt(i), false));
+                    legalMoves.Push(MoveToSan(moves.ElementAt(i), false));
                 }
             }
             return legalMoves.ToArray();

@@ -2,7 +2,7 @@ namespace brAI_lib.Classes
 {
     public partial class Chess
     {
-        IEnumerable<string> filterLegalMoves(Piece[] board, int from, int to, int flags, string us)
+        IEnumerable<Move> filterLegalMoves(Piece[] board, int from, int to, int flags, string us)
         {
             if (board[from].type == PAWN && (rank(to) == RANK_8 || rank(to) == RANK_1))
             {
@@ -11,7 +11,7 @@ namespace brAI_lib.Classes
                 {
                     Move move = build_move(board, from, to, flags, pieces[i]);
                     make_move(move);
-                    if (!king_attacked(us)) yield return move_to_san(move);
+                    if (!king_attacked(us)) yield return move;
                     undo_move();
                 }
             }
@@ -21,11 +21,11 @@ namespace brAI_lib.Classes
                 make_move(move);
                 bool legal = !king_attacked(us);
                 undo_move();
-                if (legal) yield return move_to_san(move);
+                if (legal) yield return move;
             }
         }
 
-        public IEnumerable<string> GenerateLegalMovesEnumerable()
+        public IEnumerable<Move> GenerateLegalMovesEnumerable()
         {
 
             string us = turn;
@@ -56,9 +56,9 @@ namespace brAI_lib.Classes
                         square = i + PAWN_OFFSETS[us][j];
                         if ((square & 0x88) != 0) continue;
                         if (board[square] != null && board[square].color == them)
-                            foreach (string move in filterLegalMoves(board, i, square, BITS.CAPTURE, us)) yield return move;
+                            foreach (Move move in filterLegalMoves(board, i, square, BITS.CAPTURE, us)) yield return move;
                         else if (square == ep_square)
-                            foreach (string move in filterLegalMoves(board, i, ep_square, BITS.EP_CAPTURE, us)) yield return move;
+                            foreach (Move move in filterLegalMoves(board, i, ep_square, BITS.EP_CAPTURE, us)) yield return move;
                     }
 
 
@@ -66,11 +66,11 @@ namespace brAI_lib.Classes
                     square = i + PAWN_OFFSETS[us][0];
                     if (board[square] == null)
                     {
-                        foreach (string move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
+                        foreach (Move move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
                         /* double square */
                         square = i + PAWN_OFFSETS[us][1];
                         if (second_rank[us] == rank(i) && board[square] == null)
-                            foreach (string move in filterLegalMoves(board, i, square, BITS.BIG_PAWN, us)) yield return move;
+                            foreach (Move move in filterLegalMoves(board, i, square, BITS.BIG_PAWN, us)) yield return move;
                     }                    
                 }
                 else
@@ -86,11 +86,11 @@ namespace brAI_lib.Classes
                             if (board[square] != null) 
                             {
                                 if (board[square].color != us)
-                                    foreach (string move in filterLegalMoves(board, i, square, BITS.CAPTURE, us)) yield return move;
+                                    foreach (Move move in filterLegalMoves(board, i, square, BITS.CAPTURE, us)) yield return move;
                                 break;
                             }
                             else
-                                foreach (string move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
+                                foreach (Move move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
 
                             /* break, if knight or king */
                             if (piece.type == "n" || piece.type == "k") break;
@@ -115,7 +115,7 @@ namespace brAI_lib.Classes
                         !attacked(them, kings[us]) &&
                         !attacked(them, castling_from + 1) &&
                         !attacked(them, castling_to)
-                    ) foreach (string move in filterLegalMoves(board, kings[us], castling_to, BITS.KSIDE_CASTLE, us)) 
+                    ) foreach (Move move in filterLegalMoves(board, kings[us], castling_to, BITS.KSIDE_CASTLE, us)) 
                         yield return move;
                 }
 
@@ -130,7 +130,7 @@ namespace brAI_lib.Classes
                         !attacked(them, kings[us]) &&
                         !attacked(them, castling_from - 1) &&
                         !attacked(them, castling_to)
-                    ) foreach (string move in filterLegalMoves(board, kings[us], castling_to, BITS.QSIDE_CASTLE, us)) 
+                    ) foreach (Move move in filterLegalMoves(board, kings[us], castling_to, BITS.QSIDE_CASTLE, us)) 
                         yield return move;
                 }
             }
