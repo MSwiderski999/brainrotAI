@@ -15,7 +15,7 @@ namespace brAI_lib.Classes
             {"b", 35 },
             {"r", 50 },
             {"q", 90 },
-            {"k", 0 }
+            {"k", 1000 }
         };
 
         /// <summary>
@@ -117,24 +117,13 @@ namespace brAI_lib.Classes
         /// <returns>Position evaluation.</returns>
         public static double Evaluate(Chess chess)
         {
-            return GetPieceValuesDiff(chess);
-        }
-
-        /// <summary>
-        /// Sums values of each piece on the board
-        /// </summary>
-        /// <param name="chess">Chess object</param>
-        /// <returns>Piece value balance between white and black</returns>
-        private static double GetPieceValuesDiff(Chess chess)
-        {
-            double diff = 0;
+            double eval = 0;
 
             foreach (string square in Chess.SQUARES.Keys)
             {
-                diff += GetPieceValue(chess, square);
+                eval += GetPieceValue(chess, square);
             }
-
-            return diff;
+            return eval;
         }
 
         /// <summary>
@@ -179,33 +168,6 @@ namespace brAI_lib.Classes
         }
 
         /// <summary>
-        /// Value added to position closure per pawn
-        /// </summary>
-        private static readonly double EvalPerPawn = 0.2;
-
-        /// <summary>
-        /// Calculates how closed the position is
-        /// </summary>
-        /// <param name="chess">Chess object</param>
-        /// <returns>Evaluation of closure</returns>
-        private static double PositionClosure(Chess chess)
-        {
-            int pawns = 0;
-
-            foreach (string square in Chess.SQUARES.Keys)
-            {
-                Piece piece = chess.GetPiece(square);
-
-                if (piece != null && piece.type == "p")
-                {
-                    pawns++;
-                }
-            }
-
-            return EvalPerPawn * pawns;
-        }
-
-        /// <summary>
         /// Get value of each individual piece on the board
         /// </summary>
         /// <param name="chess">Chess object</param>
@@ -217,34 +179,11 @@ namespace brAI_lib.Classes
 
             if ( piece == null ) { return 0; }
 
-            double val = GetPieceMaterial(piece) + GetSquareValue(square, piece);
+            double material = GetPieceMaterial(piece);
+            double mobility = chess.LegalMovesSquare(square).Length * material / 100;
+            double squareValue = GetSquareValue(square, piece);
 
-            if ( piece.type == "p")
-            {
-                //evaluate pawn
-            }
-            else if (piece.type == "n")
-            {
-                //knights prefer closed positions
-                val += PositionClosure(chess);
-            }
-            else if (piece.type == "b")
-            {
-                //bishops prefer open positions
-                val -= PositionClosure(chess);
-            }
-            else if (piece.type == "r")
-            {
-                //evaluate rook
-            }
-            else if (piece.type == "k")
-            {
-                //evaluate king
-            }
-            else if (piece.type == "q")
-            {
-                //evaluate queen
-            }
+            double val = material + mobility + squareValue;
 
             return piece.color == "w" ? val : -val;
         }
