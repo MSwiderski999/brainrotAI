@@ -17,14 +17,13 @@ namespace brAI_lib.Classes
             if (chess.GameOver()) throw new ArgumentException("Cannot perform search on concluded game");
 
             double value = double.NegativeInfinity;
-            string[] moves = chess.LegalMovesAll();
             int color = chess.Turn() == "w" ? 1 : -1;
             string bestMove = "";  
 
-            foreach (string move in moves) 
+            foreach (string move in chess.GenerateLegalMovesEnumerable())
             {
                 chess.Move(move);
-                double moveValue = -alphabetaNegamax(chess, depth - 1, -color, -double.NegativeInfinity, -value);
+                double moveValue = -alphabetaNegamax(chess, depth - 1, -color, double.NegativeInfinity, -value);
                 chess.Undo();
 
                 if (moveValue > value) 
@@ -54,10 +53,10 @@ namespace brAI_lib.Classes
                 return color * Evaluation.Evaluate(chess);
             else 
             {
-                double value = double.NegativeInfinity;
-                string[] moves = chess.LegalMovesAll();
 
-                foreach (string move in moves)
+                double value = double.NegativeInfinity;
+
+                foreach (string move in chess.GenerateLegalMovesEnumerable())
                 {
                     chess.Move(move);
                     value = Math.Max(value, -alphabetaNegamax(chess, depth - 1, -color, -beta, -alpha));
