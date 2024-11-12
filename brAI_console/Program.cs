@@ -35,7 +35,7 @@ namespace brAI_console
 
                 Console.WriteLine($"Best move: {best} (took {sw.ElapsedMilliseconds / 1000.0}s)");
             }
-            catch
+            catch (ArgumentException ex)
             {
                 Console.WriteLine("Error: incorrect fen format in argument [?fen]");
                 Environment.Exit(1);

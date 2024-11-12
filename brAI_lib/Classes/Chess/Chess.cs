@@ -38,7 +38,7 @@ using System.Text.RegularExpressions;
 
 namespace brAI_lib.Classes
 {
-    public class Chess
+    public partial class Chess
     {
 
         static string BLACK = "b";
