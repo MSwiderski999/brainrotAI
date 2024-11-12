@@ -37,7 +37,8 @@ namespace brAI_console
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine("Error: incorrect fen format in argument [?fen]");
+                Console.WriteLine(ex.Message);
+                // Console.WriteLine("Error: incorrect fen format in argument [?fen]");
                 Environment.Exit(1);
             }
         }

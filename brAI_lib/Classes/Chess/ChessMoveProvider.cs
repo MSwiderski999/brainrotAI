@@ -49,17 +49,7 @@ namespace brAI_lib.Classes
 
                 if (piece.type == PAWN)
                 {
-                    /* single square, non-capturing */
-                    int square = i + PAWN_OFFSETS[us][0];
-                    if (board[square] == null)
-                    {
-                        foreach (string move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
-                        /* double square */
-                        square = i + PAWN_OFFSETS[us][1];
-                        if (second_rank[us] == rank(i) && board[square] == null)
-                            foreach (string move in filterLegalMoves(board, i, square, BITS.BIG_PAWN, us)) yield return move;
-                    }
-
+                    int square;
                     /* pawn captures */
                     for (int j = 2; j < 4; j++)
                     {
@@ -70,6 +60,18 @@ namespace brAI_lib.Classes
                         else if (square == ep_square)
                             foreach (string move in filterLegalMoves(board, i, ep_square, BITS.EP_CAPTURE, us)) yield return move;
                     }
+
+
+                    /* single square, non-capturing */
+                    square = i + PAWN_OFFSETS[us][0];
+                    if (board[square] == null)
+                    {
+                        foreach (string move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
+                        /* double square */
+                        square = i + PAWN_OFFSETS[us][1];
+                        if (second_rank[us] == rank(i) && board[square] == null)
+                            foreach (string move in filterLegalMoves(board, i, square, BITS.BIG_PAWN, us)) yield return move;
+                    }                    
                 }
                 else
                 {
@@ -81,14 +83,14 @@ namespace brAI_lib.Classes
                         {
                             square += offset;
                             if ((square & 0x88) != 0) break;
-                            if (board[square] == null) 
-                                foreach (string move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
-                            else
+                            if (board[square] != null) 
                             {
                                 if (board[square].color != us)
                                     foreach (string move in filterLegalMoves(board, i, square, BITS.CAPTURE, us)) yield return move;
                                 break;
                             }
+                            else
+                                foreach (string move in filterLegalMoves(board, i, square, BITS.NORMAL, us)) yield return move;
 
                             /* break, if knight or king */
                             if (piece.type == "n" || piece.type == "k") break;
