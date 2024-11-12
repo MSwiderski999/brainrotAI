@@ -1,4 +1,4 @@
-﻿using brAI_lib.Interfaces;
+using brAI_lib.Interfaces;
 
 namespace brAI_lib.Classes
 {
@@ -24,7 +24,7 @@ namespace brAI_lib.Classes
             foreach (string move in moves) 
             {
                 chess.Move(move);
-                double moveValue = -alphabetaNegamax(chess, depth - 1, -color, -double.NegativeInfinity, -value);
+                double moveValue = -alphabetaNegamax(chess, depth - 1, -color, double.NegativeInfinity, -value);
                 chess.Undo();
 
                 if (moveValue > value) 
